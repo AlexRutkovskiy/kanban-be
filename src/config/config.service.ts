@@ -1,9 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService as NestConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ConfigService {
-  constructor(private configService: NestConfigService) {}
+  private readonly logger = new Logger(ConfigService.name);
+
+  constructor(private configService: NestConfigService) {
+    this.logger.log('ConfigService initialized');
+  }
 
   get database() {
     return {
@@ -28,8 +32,8 @@ export class ConfigService {
 
   get jwt() {
     return {
-      secret: this.configService.get<string>('jwt.secret'),
-      expiresIn: this.configService.get<string>('jwt.expiresIn'),
+      secret: this.configService.getOrThrow<string>('jwt.secret'),
+      expiresIn: this.configService.get<string>('jwt.expiresIn', '7d'),
       refreshSecret: this.configService.get<string>('jwt.refreshSecret'),
       refreshExpiresIn: this.configService.get<string>('jwt.refreshExpiresIn'),
     };
